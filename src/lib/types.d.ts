@@ -176,6 +176,12 @@ export type BaseProps = {
 				 * Custom CSS styling.
 				 */
 				style?: string;
+
+				/**
+				 * Show Accept All and Reject All buttons in the customize modal.
+				 * @default false
+				 */
+				showAcceptRejectAllButtons?: boolean;
 		  }
 		| false;
 
@@ -209,12 +215,7 @@ export type BaseProps = {
 	 * @default "#ffffff"
 	 */
 	fgColor?: string;
-};
 
-/**
- * Props common to every cookie consent.
- */
-export type CommonProps = BaseProps & {
 	/**
 	 * Label for the "Accept All" button.
 	 * Set to `false` to hide this button.
@@ -253,3 +254,8 @@ export type CommonProps = BaseProps & {
 				style?: string;
 		  };
 };
+
+/**
+ * @deprecated Use BaseProps instead. CommonProps is now an alias for backward compatibility.
+ */
+export type CommonProps = BaseProps;

@@ -1,17 +1,32 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { CommonProps } from './types.js';
+	import type { BaseProps } from './types.js';
 
 	type Props = {
-		heading: CommonProps['heading'];
-		description: CommonProps['description'];
-		customize: Exclude<CommonProps['customize'], false>;
-		choices: CommonProps['choices'];
+		heading: BaseProps['heading'];
+		description: BaseProps['description'];
+		customize: Exclude<BaseProps['customize'], false>;
+		choices: BaseProps['choices'];
+		acceptAllLabel: BaseProps['acceptAllLabel'];
+		rejectAllLabel: BaseProps['rejectAllLabel'];
 		close: () => void;
 		save: (e: Event) => void;
+		acceptAll: (e: Event) => void;
+		rejectAll: (e: Event) => void;
 	};
 
-	const { heading, description, customize, choices, close, save }: Props = $props();
+	const {
+		heading,
+		description,
+		customize,
+		choices,
+		acceptAllLabel,
+		rejectAllLabel,
+		close,
+		save,
+		acceptAll,
+		rejectAll,
+	}: Props = $props();
 
 	let container: HTMLDivElement | undefined = $state();
 
@@ -44,29 +59,41 @@
 
 	const handleLinkClick = () => {
 		close();
-
-		container?.querySelectorAll('a').forEach((link) => {
-			link.removeEventListener('click', handleLinkClick);
-		});
 	};
 
 	$effect(() => {
-		container?.querySelectorAll('a').forEach((link) => {
+		const links = Array.from(container?.querySelectorAll('a') || []);
+		links.forEach((link) => {
 			link.addEventListener('click', handleLinkClick);
 		});
+
+		return () => {
+			links.forEach((link) => {
+				link.removeEventListener('click', handleLinkClick);
+			});
+		};
 	});
 </script>
 
-<div class="customize" bind:this={container}>
+<div
+	class="customize"
+	role="dialog"
+	aria-modal="true"
+	aria-labelledby="cookie-box-title"
+	aria-describedby="cookie-box-description"
+	bind:this={container}
+>
 	<div>
 		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 		<h3 id="cookie-box-title">{@html heading}</h3>
-		<button onclick={close} class="close">&#x2715;</button>
+		<button type="button" onclick={close} class="close" aria-label="Close cookie preferences"
+			>&#x2715;</button
+		>
 		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 		<p id="cookie-box-description">{@html description}</p>
 	</div>
 
-	<form>
+	<form onsubmit={save}>
 		<h4>{customize.chooseLabel}</h4>
 		{#each Object.entries(choices) as [key, choice] (key)}
 			<div class="choice">
@@ -83,7 +110,21 @@
 			</div>
 		{/each}
 
-		<button onclick={save}>{customize.confirmLabel}</button>
+		<div class="button-group">
+			{#if customize.showAcceptRejectAllButtons}
+				{#if rejectAllLabel}
+					<button type="button" onclick={rejectAll} class="reject">
+						{typeof rejectAllLabel == 'string' ? rejectAllLabel : rejectAllLabel.text}
+					</button>
+				{/if}
+				{#if acceptAllLabel}
+					<button type="button" onclick={acceptAll} class="accept">
+						{typeof acceptAllLabel == 'string' ? acceptAllLabel : acceptAllLabel.text}
+					</button>
+				{/if}
+			{/if}
+			<button type="submit" class="confirm">{customize.confirmLabel}</button>
+		</div>
 	</form>
 </div>
 
@@ -165,8 +206,6 @@
 
 			button {
 				cursor: pointer;
-				width: 100%;
-				margin-top: 16px;
 				font-weight: 600;
 				padding: 10px;
 				border: 2px solid white;
@@ -177,6 +216,20 @@
 				&:hover {
 					color: inherit;
 					background-color: rgba(128, 128, 128, 0.2);
+				}
+			}
+
+			.button-group {
+				display: flex;
+				gap: 10px;
+				margin-top: 16px;
+
+				button {
+					flex: 1;
+
+					&.confirm {
+						flex: 2;
+					}
 				}
 			}
 		}

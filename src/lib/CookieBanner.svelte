@@ -5,7 +5,7 @@
 />
 
 <script lang="ts">
-	import type { CommonProps } from './types.js';
+	import type { BaseProps } from './types.js';
 	import BaseCookieConsent from './BaseCookieConsent.svelte';
 
 	let customizeBtn: HTMLButtonElement | undefined = $state();
@@ -24,13 +24,15 @@
 		fingerprinting = false,
 		bgColor = '#000000',
 		fgColor = '#ffffff',
-	}: CommonProps = $props();
+	}: BaseProps = $props();
 </script>
 
 <BaseCookieConsent
 	{cookie}
 	{heading}
 	{description}
+	{acceptAllLabel}
+	{rejectAllLabel}
 	{customize}
 	{choices}
 	{editable}
@@ -58,12 +60,13 @@
 
 		<div class="actions">
 			{#if customize}
-				<button id="customize" style={customize.style} bind:this={customizeBtn}>
+				<button type="button" id="customize" style={customize.style} bind:this={customizeBtn}>
 					{customize.label}
 				</button>
 			{/if}
 			{#if rejectAllLabel}
 				<button
+					type="button"
 					id="reject"
 					style={typeof rejectAllLabel === 'object' ? rejectAllLabel.style : undefined}
 					bind:this={rejectAllBtn}
@@ -73,6 +76,7 @@
 			{/if}
 			{#if acceptAllLabel}
 				<button
+					type="button"
 					id="accept"
 					style={typeof acceptAllLabel === 'object' ? acceptAllLabel.style : undefined}
 					bind:this={acceptAllBtn}

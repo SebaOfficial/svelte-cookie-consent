@@ -16,13 +16,17 @@
 		bgColor,
 		fgColor,
 		position = 'right',
+		acceptAllLabel,
+		rejectAllLabel,
 		customizeBtn,
 		rejectAllBtn,
 		acceptAllBtn,
+		children,
 	}: BaseProps & {
 		customizeBtn: HTMLButtonElement | undefined;
 		rejectAllBtn: HTMLButtonElement | undefined;
 		acceptAllBtn: HTMLButtonElement | undefined;
+		children?: import('svelte').Snippet;
 	} = $props();
 
 	let showConsent = $state(false);
@@ -66,6 +70,20 @@
 		showConsent = false;
 	};
 
+	const customizeAcceptAll = (e: Event) => {
+		e.preventDefault();
+		core.acceptAll();
+		closeCustomize();
+		showConsent = false;
+	};
+
+	const customizeRejectAll = (e: Event) => {
+		e.preventDefault();
+		core.rejectAll();
+		closeCustomize();
+		showConsent = false;
+	};
+
 	const editCookies = () => {
 		showConsent = true;
 		showCustomizeBtn();
@@ -82,9 +100,19 @@
 	});
 
 	$effect(() => {
-		customizeBtn?.addEventListener('click', showCustomizeBtn);
-		rejectAllBtn?.addEventListener('click', rejectAll);
-		acceptAllBtn?.addEventListener('click', acceptAll);
+		const onCustomize = showCustomizeBtn;
+		const onReject = rejectAll;
+		const onAccept = acceptAll;
+
+		customizeBtn?.addEventListener('click', onCustomize);
+		rejectAllBtn?.addEventListener('click', onReject);
+		acceptAllBtn?.addEventListener('click', onAccept);
+
+		return () => {
+			customizeBtn?.removeEventListener('click', onCustomize);
+			rejectAllBtn?.removeEventListener('click', onReject);
+			acceptAllBtn?.removeEventListener('click', onAccept);
+		};
 	});
 </script>
 
@@ -96,15 +124,19 @@
 		style="--bg-color: {bgColor}; --fg-color: {fgColor}"
 	>
 		{#if !showCustomize}
-			<slot />
+			{@render children?.()}
 		{:else if customize}
 			<CustomizeCookies
 				{heading}
 				{description}
 				{customize}
 				{choices}
+				{acceptAllLabel}
+				{rejectAllLabel}
 				close={closeCustomize}
 				save={confirmCustomize}
+				acceptAll={customizeAcceptAll}
+				rejectAll={customizeRejectAll}
 			/>
 		{/if}
 	</div>

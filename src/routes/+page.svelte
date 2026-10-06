@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CookieBox } from '$lib/index.js';
+	import { CookieBox } from '#lib/index.ts';
 
 	const choices = $state({
 		necessary: {

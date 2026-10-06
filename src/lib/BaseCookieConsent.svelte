@@ -33,7 +33,7 @@
 	let showCustomize = $state(false);
 
 	let escapeAction: 'close' | 'box' = $state('box');
-	const core = new CookieCore(cookie, choices, fingerprinting);
+	const core = $derived(new CookieCore(cookie, choices, fingerprinting));
 
 	const saveChoices = () => {
 		core.save();

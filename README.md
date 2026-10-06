@@ -82,8 +82,9 @@ Check out the [documentation](https://svelte-cookie-consent.js.org) for a list o
    rejectAllLabel="Reject All"
    customize={{
       label: 'Customize',
-      chooseLabel: 'Choose Wich Cookies To Enable',
+      chooseLabel: 'Choose Which Cookies To Enable',
       confirmLabel: 'Confirm My Choices',
+      showAcceptRejectAllButtons: true,
    }}
    {choices}
 />

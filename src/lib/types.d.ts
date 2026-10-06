@@ -182,6 +182,12 @@ export type BaseProps = {
 				 * @default false
 				 */
 				showAcceptRejectAllButtons?: boolean;
+
+				/**
+				 * Aria label for closing the menu
+				 * @default Close cookie preferences
+				 */
+				ariaLabel?: string;
 		  }
 		| false;
 

@@ -86,8 +86,11 @@
 	<div>
 		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 		<h3 id="cookie-box-title">{@html heading}</h3>
-		<button type="button" onclick={close} class="close" aria-label="Close cookie preferences"
-			>&#x2715;</button
+		<button
+			type="button"
+			onclick={close}
+			class="close"
+			aria-label={customize.ariaLabel ?? 'Close cookie preferences'}>&#x2715;</button
 		>
 		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 		<p id="cookie-box-description">{@html description}</p>

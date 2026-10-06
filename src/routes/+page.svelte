@@ -43,6 +43,7 @@
 		label: 'Customize',
 		chooseLabel: 'Choose Wich Cookies To Enable',
 		confirmLabel: 'Confirm My Choices',
+		showAcceptRejectAllButtons: true,
 	}}
 	{choices}
 />

@@ -11,7 +11,7 @@
 	"repository": {
 		"url": "git+https://github.com/SebaOfficial/svelte-cookie-consent.git"
 	},
-	"homepage": "https://cookie-consent.js.org/",
+	"homepage": "https://svelte-cookie-consent.js.org/",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "pnpm build:docs && pnpm build:demo && pnpm build:dist",

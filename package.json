@@ -1,6 +1,6 @@
 {
 	"name": "svelte-cookie-consent",
-	"version": "3.0.1",
+	"version": "3.0.2",
 	"description": "A Svelte cookie-consent component for customizable privacy choices",
 	"license": "MIT",
 	"author": {
@@ -51,7 +51,7 @@
 		"@eslint/compat": "^1.4.1",
 		"@eslint/js": "^9.39.5",
 		"@sveltejs/adapter-static": "^4.0.0",
-		"@sveltejs/kit": "^3.0.0",
+		"@sveltejs/kit": "^3.0.1",
 		"@sveltejs/load-config": "^0.2.3",
 		"@sveltejs/package": "^2.5.8",
 		"@sveltejs/vite-plugin-svelte": "^7.3.1",
@@ -71,7 +71,7 @@
 		"typedoc": "^0.28.20",
 		"typescript": "^6.0.3",
 		"typescript-eslint": "^8.71.1",
-		"vite": "^8.3.2"
+		"vite": "^8.3.3"
 	},
 	"dependencies": {
 		"js-cookie": "^3.0.8",

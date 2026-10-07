@@ -19,8 +19,11 @@ export default class CookieCore {
 		if (this.fingerprinting && (data.tracking || data.analytics)) {
 			const existing = this.parseConsentCookie(cookies.get(this.cookie.name));
 			const fp =
-				existing?.fingerprint ??
-				(this.fingerprinting === true ? uuid() : (this.fingerprinting.uuid ?? uuid()));
+				typeof existing?.fingerprint === 'string'
+					? existing.fingerprint
+					: this.fingerprinting === true
+						? uuid()
+						: (this.fingerprinting.uuid ?? uuid());
 
 			if (this.fingerprinting !== true && this.fingerprinting.cookie) {
 				const { name, ...config } = this.fingerprinting.cookie;
@@ -28,7 +31,7 @@ export default class CookieCore {
 			} else {
 				data.fingerprint = fp;
 			}
-		} else if (this.fingerprinting !== true && this.fingerprinting.cookie) {
+		} else if (this.fingerprinting && this.fingerprinting !== true && this.fingerprinting.cookie) {
 			const { name, path, domain } = this.fingerprinting.cookie;
 			cookies.remove(name, { path, domain });
 		}

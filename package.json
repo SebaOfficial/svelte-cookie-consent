@@ -1,6 +1,6 @@
 {
 	"name": "svelte-cookie-consent",
-	"version": "3.0.0",
+	"version": "3.0.1",
 	"description": "A Svelte cookie-consent component for customizable privacy choices",
 	"license": "MIT",
 	"author": {

@@ -11,6 +11,7 @@
 	let customizeBtn: HTMLButtonElement | undefined = $state();
 	let rejectAllBtn: HTMLButtonElement | undefined = $state();
 	let acceptAllBtn: HTMLButtonElement | undefined = $state();
+	const instanceId = `cookie-consent-${Math.random().toString(36).slice(2)}`;
 
 	const {
 		cookie,
@@ -20,17 +21,23 @@
 		rejectAllLabel,
 		customize,
 		choices = $bindable(),
+		consentVersion,
 		editable = true,
 		fingerprinting = false,
 		bgColor = '#000000',
 		fgColor = '#ffffff',
 	}: BaseProps = $props();
+
+	const contentText = (content: BaseProps['heading']) =>
+		typeof content === 'string' ? content : 'text' in content ? content.text : null;
 </script>
 
 <BaseCookieConsent
 	{cookie}
 	{heading}
 	{description}
+	{consentVersion}
+	{instanceId}
 	{acceptAllLabel}
 	{rejectAllLabel}
 	{customize}
@@ -45,16 +52,24 @@
 >
 	<div class="banner">
 		<div>
-			<h3 id="cookie-consent-title" style={typeof heading == 'object' ? heading.style : undefined}>
-				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-				{@html typeof heading === 'string' ? heading : heading.text}
+			<h3 id={`${instanceId}-title`} style={typeof heading == 'object' ? heading.style : undefined}>
+				{#if typeof heading === 'object' && 'html' in heading}
+					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+					{@html heading.html}
+				{:else}
+					{contentText(heading)}
+				{/if}
 			</h3>
 			<p
-				id="cookie-consent-description"
+				id={`${instanceId}-description`}
 				style={typeof description == 'object' ? description.style : undefined}
 			>
-				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-				{@html typeof description === 'string' ? description : description.text}
+				{#if typeof description === 'object' && 'html' in description}
+					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+					{@html description.html}
+				{:else}
+					{contentText(description)}
+				{/if}
 			</p>
 		</div>
 
@@ -71,7 +86,12 @@
 					style={typeof rejectAllLabel === 'object' ? rejectAllLabel.style : undefined}
 					bind:this={rejectAllBtn}
 				>
-					{typeof rejectAllLabel == 'string' ? rejectAllLabel : rejectAllLabel.text}
+					{#if typeof rejectAllLabel === 'object' && 'html' in rejectAllLabel}
+						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+						{@html rejectAllLabel.html}
+					{:else}
+						{typeof rejectAllLabel === 'string' ? rejectAllLabel : rejectAllLabel.text}
+					{/if}
 				</button>
 			{/if}
 			{#if acceptAllLabel}
@@ -81,7 +101,12 @@
 					style={typeof acceptAllLabel === 'object' ? acceptAllLabel.style : undefined}
 					bind:this={acceptAllBtn}
 				>
-					{typeof acceptAllLabel == 'string' ? acceptAllLabel : acceptAllLabel.text}
+					{#if typeof acceptAllLabel === 'object' && 'html' in acceptAllLabel}
+						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+						{@html acceptAllLabel.html}
+					{:else}
+						{typeof acceptAllLabel === 'string' ? acceptAllLabel : acceptAllLabel.text}
+					{/if}
 				</button>
 			{/if}
 		</div>

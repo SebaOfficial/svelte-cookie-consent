@@ -1,20 +1,11 @@
-import CookieBox from './CookieBox.svelte';
-import CookieBanner from './CookieBanner.svelte';
+export { default as CookieBox } from './CookieBox.svelte';
+export { default as CookieBanner } from './CookieBanner.svelte';
 
-import type {
+export type {
 	SuggestedChoices,
 	Choice,
 	Choices,
 	CookieConfig,
 	FingerprintingConfig,
+	TextContent,
 } from './types.js';
-
-export {
-	CookieBox,
-	CookieBanner,
-	type SuggestedChoices,
-	type Choice,
-	type Choices,
-	type CookieConfig,
-	type FingerprintingConfig,
-};

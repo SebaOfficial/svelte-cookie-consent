@@ -3,6 +3,8 @@ name: Build and Deploy
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -31,6 +33,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Audit dependencies
+        run: pnpm audit --audit-level high
+
+      - name: Check source
+        run: pnpm check
+
       - name: Build Project
         env:
           BASE_PATH: '/demo'
@@ -53,6 +61,7 @@ jobs:
   deploy:
     name: Deploy to GitHub Pages
     needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -68,6 +77,7 @@ jobs:
   publish:
     name: Publish to npm registry
     needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read

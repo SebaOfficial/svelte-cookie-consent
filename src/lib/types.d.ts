@@ -4,19 +4,36 @@
 export type SuggestedChoices = 'necessary' | 'tracking' | 'analytics' | 'marketing';
 
 /**
+ * Text rendered safely by default, or explicitly as trusted HTML.
+ *
+ * The `html` property is rendered with Svelte's raw HTML support and must
+ * contain trusted or sanitized content.
+ */
+export type TextContent =
+	| string
+	| {
+			text: string;
+			style?: string;
+	  }
+	| {
+			html: string;
+			style?: string;
+	  };
+
+/**
  * A cookie choice given to the user
  */
 export type Choice = {
 	/**
 	 * The display name of the option shown to the user.
 	 */
-	label: string;
+	label: TextContent;
 
 	/**
 	 * A description of the option, shown to the user.
-	 * HTML is supported.
+	 * Rendered as text by default. Use the `html` property for trusted or sanitized HTML.
 	 */
-	description: string;
+	description: TextContent;
 
 	/**
 	 * If true, this option cannot be declined by the user.
@@ -106,6 +123,12 @@ export type CookiePosition = 'left' | 'right';
 
 export type BaseProps = {
 	/**
+	 * Optional consent-policy version. Changing it treats existing consent as
+	 * outdated and asks the user to choose again.
+	 */
+	consentVersion?: string;
+
+	/**
 	 * A map of cookie choices that the user can accept or reject.
 	 */
 	choices: Choices;
@@ -117,39 +140,15 @@ export type BaseProps = {
 
 	/**
 	 * The title displayed on the cookie consent popup.
-	 * You can use HTML.
+	 * Rendered as text by default. Use `html` for trusted or sanitized HTML.
 	 */
-	heading:
-		| string
-		| {
-				/**
-				 * The title displayed on the cookie consent popup.
-				 * You can use HTML.
-				 */
-				text: string;
-				/**
-				 * Custom CSS styling
-				 */
-				style?: string;
-		  };
+	heading: TextContent;
 
 	/**
 	 * A description shown in the popup.
-	 * You can use HTML.
+	 * Rendered as text by default. Use `html` for trusted or sanitized HTML.
 	 */
-	description:
-		| string
-		| {
-				/**
-				 * The title displayed on the cookie consent popup.
-				 * You can use HTML.
-				 */
-				text: string;
-				/**
-				 * Custom CSS styling
-				 */
-				style?: string;
-		  };
+	description: TextContent;
 
 	/**
 	 * Configuration for the "Customize" option in the banner.
@@ -226,39 +225,13 @@ export type BaseProps = {
 	 * Label for the "Accept All" button.
 	 * Set to `false` to hide this button.
 	 */
-	acceptAllLabel:
-		| string
-		| false
-		| {
-				/**
-				 * The title displayed on the cookie consent popup.
-				 * You can use HTML.
-				 */
-				text: string;
-				/**
-				 * Custom CSS styling
-				 */
-				style?: string;
-		  };
+	acceptAllLabel: TextContent | false;
 
 	/**
 	 * Label for the "Reject All" button.
 	 * Set to `false` to hide this button.
 	 */
-	rejectAllLabel:
-		| string
-		| false
-		| {
-				/**
-				 * The title displayed on the cookie consent popup.
-				 * You can use HTML.
-				 */
-				text: string;
-				/**
-				 * Custom CSS styling
-				 */
-				style?: string;
-		  };
+	rejectAllLabel: TextContent | false;
 };
 
 /**

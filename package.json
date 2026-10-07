@@ -1,7 +1,7 @@
 {
 	"name": "svelte-cookie-consent",
-	"version": "2.4.1",
-	"description": "A GDPR compliant cookie banner",
+	"version": "3.0.0",
+	"description": "A Svelte cookie-consent component for customizable privacy choices",
 	"license": "MIT",
 	"author": {
 		"name": "Sebastiano Racca",

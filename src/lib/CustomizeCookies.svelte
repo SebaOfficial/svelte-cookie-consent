@@ -13,6 +13,7 @@
 		save: (e: Event) => void;
 		acceptAll: (e: Event) => void;
 		rejectAll: (e: Event) => void;
+		instanceId: string;
 	};
 
 	const {
@@ -26,17 +27,10 @@
 		save,
 		acceptAll,
 		rejectAll,
+		instanceId,
 	}: Props = $props();
 
 	let container: HTMLDivElement | undefined = $state();
-
-	const toHtmlId = (str: string) =>
-		str
-			.toLowerCase()
-			.trim()
-			.replace(/[^a-z0-9\s-]/g, '')
-			.replace(/\s+/g, '-')
-			.replace(/-+/g, '-');
 
 	let onclick = $state((_e: MouseEvent) => {});
 
@@ -79,21 +73,33 @@
 	class="customize"
 	role="dialog"
 	aria-modal="true"
-	aria-labelledby="cookie-box-title"
-	aria-describedby="cookie-box-description"
+	aria-labelledby={`${instanceId}-customize-title`}
+	aria-describedby={`${instanceId}-customize-description`}
 	bind:this={container}
 >
 	<div>
-		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-		<h3 id="cookie-box-title">{@html heading}</h3>
+		<h3 id={`${instanceId}-customize-title`}>
+			{#if typeof heading === 'object' && 'html' in heading}
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+				{@html heading.html}
+			{:else}
+				{typeof heading === 'string' ? heading : heading.text}
+			{/if}
+		</h3>
 		<button
 			type="button"
 			onclick={close}
 			class="close"
 			aria-label={customize.ariaLabel ?? 'Close cookie preferences'}>&#x2715;</button
 		>
-		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-		<p id="cookie-box-description">{@html description}</p>
+		<p id={`${instanceId}-customize-description`}>
+			{#if typeof description === 'object' && 'html' in description}
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+				{@html description.html}
+			{:else}
+				{typeof description === 'string' ? description : description.text}
+			{/if}
+		</p>
 	</div>
 
 	<form onsubmit={save}>
@@ -102,13 +108,26 @@
 			<div class="choice">
 				<input
 					type="checkbox"
-					id={toHtmlId(choice.label)}
+					id={`${instanceId}-choice-${key}`}
 					bind:checked={choice.value}
 					disabled={choice.mandatory}
 				/>
-				<label for={toHtmlId(choice.label)}>
-					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-					<strong>{choice.label}</strong> - {@html choice.description}
+				<label for={`${instanceId}-choice-${key}`}>
+					<strong>
+						{#if typeof choice.label === 'object' && 'html' in choice.label}
+							<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+							{@html choice.label.html}
+						{:else}
+							{typeof choice.label === 'string' ? choice.label : choice.label.text}
+						{/if}
+					</strong>
+					-
+					{#if typeof choice.description === 'object' && 'html' in choice.description}
+						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+						{@html choice.description.html}
+					{:else}
+						{typeof choice.description === 'string' ? choice.description : choice.description.text}
+					{/if}
 				</label>
 			</div>
 		{/each}
@@ -117,12 +136,22 @@
 			{#if customize.showAcceptRejectAllButtons}
 				{#if rejectAllLabel}
 					<button type="button" onclick={rejectAll} class="reject">
-						{typeof rejectAllLabel == 'string' ? rejectAllLabel : rejectAllLabel.text}
+						{#if typeof rejectAllLabel === 'object' && 'html' in rejectAllLabel}
+							<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+							{@html rejectAllLabel.html}
+						{:else}
+							{typeof rejectAllLabel === 'string' ? rejectAllLabel : rejectAllLabel.text}
+						{/if}
 					</button>
 				{/if}
 				{#if acceptAllLabel}
 					<button type="button" onclick={acceptAll} class="accept">
-						{typeof acceptAllLabel == 'string' ? acceptAllLabel : acceptAllLabel.text}
+						{#if typeof acceptAllLabel === 'object' && 'html' in acceptAllLabel}
+							<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+							{@html acceptAllLabel.html}
+						{:else}
+							{typeof acceptAllLabel === 'string' ? acceptAllLabel : acceptAllLabel.text}
+						{/if}
 					</button>
 				{/if}
 			{/if}

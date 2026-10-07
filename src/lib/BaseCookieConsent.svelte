@@ -1,6 +1,6 @@
 <script lang="ts">
 	import CookieCore from './core.js';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import type { BaseProps } from './types.js';
 	import EditCookies from './EditCookies.svelte';
 	import CustomizeCookies from './CustomizeCookies.svelte';
@@ -11,6 +11,8 @@
 		description,
 		customize,
 		choices = $bindable(),
+		consentVersion,
+		instanceId,
 		editable,
 		fingerprinting = true,
 		bgColor,
@@ -27,13 +29,16 @@
 		rejectAllBtn: HTMLButtonElement | undefined;
 		acceptAllBtn: HTMLButtonElement | undefined;
 		children?: import('svelte').Snippet;
+		instanceId: string;
 	} = $props();
 
 	let showConsent = $state(false);
 	let showCustomize = $state(false);
+	let dialog: HTMLDivElement | undefined = $state();
+	let previouslyFocused: HTMLElement | null = null;
 
 	let escapeAction: 'close' | 'box' = $state('box');
-	const core = $derived(new CookieCore(cookie, choices, fingerprinting));
+	const core = $derived(new CookieCore(cookie, choices, fingerprinting, consentVersion));
 
 	const saveChoices = () => {
 		core.save();
@@ -44,15 +49,21 @@
 		core.acceptAll();
 		showConsent = false;
 		escapeAction = 'close';
+		previouslyFocused?.focus();
+		previouslyFocused = null;
 	};
 
 	const rejectAll = () => {
 		core.rejectAll();
 		showConsent = false;
 		escapeAction = 'close';
+		previouslyFocused?.focus();
+		previouslyFocused = null;
 	};
 
 	const showCustomizeBtn = () => {
+		previouslyFocused ??=
+			document.activeElement instanceof HTMLElement ? document.activeElement : null;
 		showCustomize = true;
 		document.documentElement.classList.add('blury-background-for-cookie-consent');
 	};
@@ -61,6 +72,8 @@
 		document.documentElement.classList.remove('blury-background-for-cookie-consent');
 		showCustomize = false;
 		showConsent = escapeAction === 'box';
+		previouslyFocused?.focus();
+		previouslyFocused = null;
 	};
 
 	const confirmCustomize = (e: Event) => {
@@ -85,9 +98,47 @@
 	};
 
 	const editCookies = () => {
+		previouslyFocused =
+			document.activeElement instanceof HTMLElement ? document.activeElement : null;
 		showConsent = true;
 		showCustomizeBtn();
 	};
+
+	const onDialogKeydown = (event: KeyboardEvent) => {
+		if (event.key === 'Escape' && showCustomize) {
+			closeCustomize();
+			return;
+		}
+
+		if (event.key !== 'Tab' || !dialog) return;
+		const focusable = Array.from(
+			dialog.querySelectorAll<HTMLElement>(
+				'button:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+			),
+		);
+		if (!focusable.length) return;
+
+		const first = focusable[0];
+		const last = focusable[focusable.length - 1];
+		if (event.shiftKey && document.activeElement === first) {
+			event.preventDefault();
+			last.focus();
+		} else if (!event.shiftKey && document.activeElement === last) {
+			event.preventDefault();
+			first.focus();
+		}
+	};
+
+	$effect(() => {
+		if (!showConsent) return;
+		void tick().then(() => {
+			dialog
+				?.querySelector<HTMLElement>(
+					'button:not([disabled]), input:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+				)
+				?.focus();
+		});
+	});
 
 	onMount(() => {
 		let selectedCookies = core.getSaved();
@@ -119,8 +170,12 @@
 {#if showConsent}
 	<div
 		role="dialog"
-		aria-labelledby="cookie-consent-title"
-		aria-describedby="cookie-consent-description"
+		tabindex="-1"
+		aria-modal="true"
+		aria-labelledby={`${instanceId}-title`}
+		aria-describedby={`${instanceId}-description`}
+		bind:this={dialog}
+		onkeydown={onDialogKeydown}
 		style="--bg-color: {bgColor}; --fg-color: {fgColor}"
 	>
 		{#if !showCustomize}
@@ -129,6 +184,7 @@
 			<CustomizeCookies
 				{heading}
 				{description}
+				{instanceId}
 				{customize}
 				{choices}
 				{acceptAllLabel}
